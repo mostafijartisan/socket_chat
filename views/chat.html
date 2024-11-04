@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chat</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <div class="container-fluid">
+      <!-- user lists-->
+      <div class="row mt-4">
+        <div class="col-md-3">
+          <div class="col-xs-12">
+            <div class="card card-widget widget-user-2">
+              <div class="widget-user-header bg-primary" id="my-user-id">
+                Your ID is : 123456789
+              </div>
+            </div>
+          </div>
+
+          <hr />
+
+          <div class="col-xs-12">
+            <div class="card card-widget widget-user-2">
+              <div class="widget-user-header bg-default">
+                <i class="fas fa-circle text-success" title="Online"></i>
+                User ID : 123456789
+                <button class="btn btn-xs btn-primary">Start chat</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-xs-12">
+            <div class="card card-widget widget-user-2">
+              <div class="widget-user-header bg-default">
+                <i class="fas fa-circle text-danger" title="Offline"></i>
+                User ID : 123456789
+                <button class="btn btn-xs btn-primary" disabled>
+                  Start chat
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-xs-12">
+            <div class="card card-widget widget-user-2">
+              <div class="widget-user-header bg-default">
+                <i class="fas fa-circle text-success" title="Online"></i>
+                User ID : 123456789
+                <button class="btn btn-xs btn-primary">Start chat</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-xs-12">
+            <div class="card card-widget widget-user-2">
+              <div class="widget-user-header bg-default">
+                <i class="fas fa-circle text-danger" title="Offline"></i>
+                User ID : 123456789
+                <button class="btn btn-xs btn-primary" disabled>
+                  Start chat
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div
+            class="card card-primary card-outline direct-chat direct-chat-primary"
+          >
+            <div class="card-header">
+              <h3 class="card-title">User ID : 123456789</h3>
+              <div class="card-tools">
+                <button
+                  type="button"
+                  class="btn btn-tool"
+                  data-card-widget="remove"
+                >
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+              <div class="direct-chat-messages">
+                <div class="direct-chat-msg">
+                  <div class="direct-chat-infos clearfix">
+                    <span class="direct-chat-timestamp float-right"
+                      >23 Jan 2:00 pm</span
+                    >
+                  </div>
+                  <img
+                    class="direct-chat-img"
+                    src="/img/default.png"
+                    alt="Message User Image"
+                  />
+                  <div class="direct-chat-text">
+                    Is this template really for free? That's unbelievable!
+                  </div>
+                </div>
+                <div class="direct-chat-msg right">
+                  <div class="direct-chat-infos clearfix">
+                    <span class="direct-chat-timestamp float-left"
+                      >23 Jan 2:05 pm</span
+                    >
+                  </div>
+                  <img
+                    class="direct-chat-img"
+                    src="/img/default.png"
+                    alt="Message User Image"
+                  />
+                  <div class="direct-chat-text">You better believe it!</div>
+                </div>
+              </div>
+              <div class="direct-chat-contacts">
+                <ul class="contacts-list">
+                  <li>
+                    <a href="#">
+                      <img
+                        class="contacts-list-img"
+                        src="/img/default.png"
+                        alt="User Avatar"
+                      />
+                      <div class="contacts-list-info">
+                        <span class="contacts-list-name">
+                          Count Dracula
+                          <small class="contacts-list-date float-right"
+                            >2/28/2015</small
+                          >
+                        </span>
+                        <span class="contacts-list-msg"
+                          >How have you been? I was...</span
+                        >
+                      </div>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="card-footer">
+              <form id="form">
+                <div class="input-group">
+                  <input
+                    id="input"
+                    type="text"
+                    class="form-control"
+                    placeholder="Type Message ..."
+                  />
+                  <span class="input-group-append">
+                    <button type="submit" class="btn btn-primary">Send</button>
+                  </span>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- socket for client side -->
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script>
+      function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(";").shift();
+      }
+    </script>
+
+    <!-- send message from client end -->
+    <script>
+      let userId = getCookie("userId");
+
+      console.log(userId);
+
+      const socket = io("http://localhost:3000", {
+        query: { userId: userId || "" }, // Send userId if available
+        withCredentials: true,
+      });
+
+      socket.on("assignUserId", (newUserId) => {
+        console.log("Assigned new user ID from server:", newUserId);
+        document.cookie = `userId=${newUserId}; path=/`; // Save new user ID in cookie
+      });
+
+      // Listen for the connected users list from the server
+      socket.on("connectedUsers", (usersList) => {
+        console.log("Connected users:", usersList);
+        // You can now display or use this list in the UI
+      });
+
+      // // send message
+      // var form = document.getElementById("form");
+      // var input = document.getElementById("input");
+      // var messages = document.getElementById("messages");
+
+      // // send msg to server
+      // form.addEventListener("submit", function (e) {
+      //   e.preventDefault();
+      //   if (input.value) {
+      //     socket.emit("chat message", input.value);
+      //     input.value = "";
+      //   }
+      // });
+
+      //
+      // socket.on("chat message", function (msg) {
+      //   var item = document.createElement("li");
+      //   item.textContent = msg;
+      //   messages.appendChild(item);
+      //   window.scrollTo(0, document.body.scrollHeight);
+      // });
+    </script>
+  </body>
+</html>
